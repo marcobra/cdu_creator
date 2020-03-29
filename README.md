@@ -18,6 +18,7 @@ Da qui è necessario selezionare tramite il pulsante di navigazione il file ZIP 
 Il manuale d'uso del Plugin CDU Creator è disponibile a questo link https://manuale-cdu-creator.readthedocs.io/it/latest/
 
 Per avere un set d dati di test per provare questo plugin scaricarli direttamente da [qui](https://manuale-cdu-creator.readthedocs.io/it/latest/plugin.html#esempio)
+
 Per segnalarci eventuali errori, bachi e simili si prega di aprire una issue su questa repository.
 
 
