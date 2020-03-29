@@ -247,8 +247,9 @@ class CduCreator:
                 self.CduComune = param[4].strip()
                 self.input_logo_path = param[5].strip()
                 self.input_txt_path = param[6].strip()
-                self.checkAreaBox = param[7].strip()
-                self.checkAreaPercBox = param[8].strip()
+                self.input_piede_txt_path = param[7].strip()
+                self.checkAreaBox = param[8].strip()
+                self.checkAreaPercBox = param[9].strip()
                 self.dlg.OutFolder.setText(self.cdu_path_folder)
                 if self.checkOdtBox == 'True':
                     self.checkOdtBox = True
@@ -266,6 +267,7 @@ class CduCreator:
                 self.dlg.nomeComune.setText(self.CduComune)
                 self.dlg.urlLogo.setText(self.input_logo_path)
                 self.dlg.urlTxt.setText(self.input_txt_path)
+                self.dlg.urlPiedeTxt.setText(self.input_piede_txt_path)
                 if self.checkAreaBox == 'True':
                     self.checkAreaBox = True
                     self.dlg.printAreaBox.setChecked(True)
@@ -301,7 +303,9 @@ class CduCreator:
                 self.dlg.logoButton.clicked.connect(self.importLogo)
                 self.dlg.urlLogo.textChanged.connect(self.handleLogo)
                 self.dlg.txtButton.clicked.connect(self.importTxt)
+                self.dlg.txtPiedeButton.clicked.connect(self.importPiedeTxt)
                 self.dlg.urlTxt.textChanged.connect(self.handleTxt)
+                self.dlg.urlPiedeTxt.textChanged.connect(self.handlePiedeTxt)
                 self.dlg.titolo.textChanged.connect(self.handleTitle)
                 self.dlg.nomeComune.textChanged.connect(self.handleComune)
                 #self.dlg.textParticelle.textChanged.connect(self.handleParticelleText)
@@ -345,7 +349,7 @@ class CduCreator:
                     map.setExtent(box)
                     map.refresh()
                         
-                    self.dlg.textLog.append(self.tr('ATTENZIONE: è già presente una selezione nel layer terreni_catastali.\nUlteriori selezioni utilizzando i menù a tendina saranno aggiunte a quella esistente.'))
+                    self.mytopmessage(self.tr('ATTENZIONE: è già presente una selezione nel layer terreni_catastali.\nUlteriori selezioni utilizzando i menù a tendina saranno aggiunte a quella esistente.'))
                     QCoreApplication.processEvents()
                     
                 self.dlg.show()
@@ -383,13 +387,13 @@ class CduCreator:
 
         if self.check_s == 0:
             self.dlg.sezioneComboBox.setEnabled(False)
-            self.dlg.textLog.append(self.tr('INFO: una colonna con nome o alias = sezione non è stata trovata, il menù a tendina Sezione è stato disabilitato.\n'))
+            self.mytopmessage(self.tr('INFO: una colonna con nome o alias = sezione non è stata trovata, il menù a tendina Sezione è stato disabilitato.\n'))
             QCoreApplication.processEvents()
         if self.check_f == 0:
-            self.dlg.textLog.append(self.tr('ERRORE: una colonna con nome o alias = foglio non è stata trovata\n'))
+            self.mytopmessage(self.tr('ERRORE: una colonna con nome o alias = foglio non è stata trovata\n'))
             return
         if self.check_m == 0:
-            self.dlg.textLog.append(self.tr('ERRORE: una colonna con nome o alias = mappale non è stata trovata\n'))
+            self.mytopmessage(self.tr('ERRORE: una colonna con nome o alias = mappale non è stata trovata\n'))
             return
 
         #print(self.foglioIndex)
@@ -608,7 +612,7 @@ class CduCreator:
             map.refresh()
                 
         else:
-            self.dlg.textLog.append(self.tr('ATTENZIONE: è necessario selezionare almeno un valore per il foglio e uno per il mappale.'))
+            self.mytopmessage(self.tr('ATTENZIONE: è necessario selezionare almeno un valore per il foglio e uno per il mappale.'))
             return
             
     def removeMapButton(self):
@@ -655,7 +659,7 @@ class CduCreator:
             map.refresh()
                     
         else:
-            self.dlg.textLog.append(self.tr('ATTENZIONE: è necessario selezionare almeno un valore per il foglio e uno per il mappale.'))
+            self.mytopmessage(self.tr('ATTENZIONE: è necessario selezionare almeno un valore per il foglio e uno per il mappale.'))
             return
             
     def reloadMapButton(self):
@@ -758,10 +762,20 @@ class CduCreator:
         self.input_txt, _filter = QFileDialog.getOpenFileName(None, "Open ", '.', "(*.txt)")
         self.input_txt_path = QDir.toNativeSeparators(self.input_txt)
         input_txt_txt = self.dlg.urlTxt.setText(self.input_txt_path)
-        
+
     def handleTxt(self, val):
         self.input_txt_path = val
         print(self.input_txt_path)
+
+    def importPiedeTxt(self):
+        self.input_piede_txt, _filter = QFileDialog.getOpenFileName(None, "Open ", '.', "(*.txt)")
+        self.input_piede_txt_path = QDir.toNativeSeparators(self.input_piede_txt)
+        input_piede_txt_txt = self.dlg.urlPiedeTxt.setText(self.input_piede_txt_path)
+
+    def handlePiedeTxt(self, val):
+        self.input_piede_txt_path = val
+        print(self.input_piede_txt_path)
+
 
     def handleAreaBox(self):
         if self.dlg.printAreaBox.isChecked() == True:
@@ -823,7 +837,9 @@ class CduCreator:
         self.dlg.logoButton.clicked.disconnect(self.importLogo)
         self.dlg.urlLogo.textChanged.disconnect(self.handleLogo)
         self.dlg.txtButton.clicked.disconnect(self.importTxt)
+        self.dlg.txtPiedeButton.clicked.disconnect(self.importPiedeTxt)
         self.dlg.urlTxt.textChanged.disconnect(self.handleTxt)
+        self.dlg.urlPiedeTxt.textChanged.disconnect(self.handlePiedeTxt)
         self.dlg.titolo.textChanged.disconnect(self.handleTitle)
         self.dlg.nomeComune.textChanged.disconnect(self.handleComune)
         #self.dlg.textParticelle.textChanged.disconnect(self.handleParticelleText)
@@ -865,6 +881,7 @@ class CduCreator:
         self.checkAreaPercBox = False
         self.root = ''
         self.input_txt_path = ''
+        self.input_piede_txt_path = ''
         self.cdu_file_name = ''
         self.protocollo = ''
         self.richiedente = ''
@@ -884,25 +901,38 @@ class CduCreator:
 
         from qgis.utils import reloadPlugin
         reloadPlugin("CduCreator")
+
+
+
+    def mytopmessage(self,cText):
+        #mMess=self.dlg.textLog.toPlainText()
+        self.dlg.textLog.setText('↑'+cText+self.dlg.textLog.toPlainText())
+        #self.mytopmessage(self.tr('ATTENZIONE: nessun gruppo è stato selezionato, selezionare il gruppo contenente i dati urbanistici\n'))       
+
             
 
     def run(self):
         #print(show_values_s)
         #print(self.sezioneIndex)
-        self.dlg.textLog.setText(self.tr('INIZIO PROCESSO...\nPotrebbe richiedere un po\' di tempo a seconda del numero di particelle selezionate. Attendere la fine del processo.\n'))
+        self.dlg.textLog.setText('') # pulizia del log
+        #self.mytopmessage(self.tr('Messaggi elaborazione...↑↑↑\nPotrebbe richiedere un po\' di tempo a seconda del numero di particelle selezionate. Attendere la fine del processo.\n'))
         QCoreApplication.processEvents()
-        
+
         if self.gruppoIndex == 0:
-            self.dlg.textLog.append(self.tr('ATTENZIONE: nessun gruppo è stato selezionato, selezionare il gruppo contenete i dati urbanistici\n'))
+            self.dlg.textLog.setText('') # pulizia del log
+            self.mytopmessage('ATTENZIONE: nessun gruppo è stato selezionato selezionare il gruppo contenente i dati urbanistici\n')
             return
             
         if self.cdu_path_folder == '':
-            self.dlg.textLog.append(self.tr('ERRORE: nessuna cartella di output è stata selezionata\n'))
+            self.dlg.textLog.setText('') # pulizia del log
+            self.mytopmessage('ERRORE: nessuna cartella di output è stata selezionata\n')
             return
             
         if os.path.isdir(self.cdu_path_folder) == False:
-            self.dlg.textLog.append(self.tr('ERRORE: la cartella {} non esiste\n'.format(self.cdu_path_folder)))
+            self.dlg.textLog.setText('') # pulizia del log
+            self.mytopmessage('ERRORE: la cartella {} non esiste\n'.format(self.cdu_path_folder))
             return
+            
             
         param_file = open(self.param_txt, "w")
         param_file.write(self.cdu_path_folder + '\n')
@@ -912,6 +942,7 @@ class CduCreator:
         param_file.write(self.CduComune + '\n')
         param_file.write(self.input_logo_path + '\n')
         param_file.write(self.input_txt_path + '\n')
+        param_file.write(self.input_piede_txt_path + '\n')
         param_file.write(str(self.checkAreaBox) + '\n')
         param_file.write(str(self.checkAreaPercBox) + '\n')
         param_file.close()
@@ -935,10 +966,10 @@ class CduCreator:
             
             if self.lyr.selectedFeatureCount() > 0:
                 selectedF = self.lyr.selectedFeatures()
-                self.dlg.textLog.append(self.tr('Sono state selezionate {} particelle.\n'.format(self.lyr.selectedFeatureCount())))
+                self.mytopmessage(self.tr('Sono state selezionate {} particelle.\n'.format(self.lyr.selectedFeatureCount())))
                 QCoreApplication.processEvents()
             else:
-                self.dlg.textLog.append(self.tr('ATTENZIONE: nessuna particella è stata selezionata, selezionare un mappale\n'))
+                self.mytopmessage(self.tr('ATTENZIONE: nessuna particella è stata selezionata, selezionare un mappale\n'))
                 return
             
             #zoom alla selezione
@@ -978,7 +1009,7 @@ class CduCreator:
             count_map = 0
             for ii in selectedF:
                 count_map += 1
-                self.dlg.textLog.append(self.tr('Elaborazione particella n. {} di {}.\n'.format(count_map, self.lyr.selectedFeatureCount())))
+                self.mytopmessage(self.tr('Elaborazione particella n. {} di {}.\n'.format(count_map, self.lyr.selectedFeatureCount())))
                 QCoreApplication.processEvents()
                 if self.lyr.fields().lookupField("SEZIONE") != -1:
                     #print('la sezione esiste')
@@ -1068,7 +1099,7 @@ class CduCreator:
                                 'OVERLAY': vl,
                                 'OUTPUT': '{}/{}'.format(out_tempdir.name, file_name)})
                         except:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: sono stati riscontrati problemi nell\'intersezione fra la particella selezionata e il layer {}. Il CDU non verrà creato.\n'.format(layers_dict[key][1])))
+                            self.mytopmessage(self.tr('ATTENZIONE: sono stati riscontrati problemi nell\'intersezione fra la particella selezionata e il layer {}. Il CDU non verrà creato.\n'.format(layers_dict[key][1])))
                             QCoreApplication.processEvents()
                             rm_group = self.root.findGroup('temp')
                             if rm_group is not None:
@@ -1166,38 +1197,38 @@ class CduCreator:
                                 check_feat += 1
 
                         if nome_check == 0 and msg_nome_check == 0:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: la colonna "Nome" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
+                            self.mytopmessage(self.tr('ATTENZIONE: la colonna "Nome" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
                             QCoreApplication.processEvents()
                             msg_nome_check += 1
                         if descr_check == 0 and msg_descr_check == 0:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: la colonna "Descrizione" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
+                            self.mytopmessage(self.tr('ATTENZIONE: la colonna "Descrizione" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
                             QCoreApplication.processEvents()
                             msg_descr_check += 1
                         if rif_check == 0 and msg_rif_check == 0:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: la colonna "Riferimento legislativo" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
+                            self.mytopmessage(self.tr('ATTENZIONE: la colonna "Riferimento legislativo" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
                             QCoreApplication.processEvents()
                             msg_rif_check += 1
                         if art_check == 0 and msg_art_check == 0:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: la colonna "Articolo" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
+                            self.mytopmessage(self.tr('ATTENZIONE: la colonna "Articolo" non è stata trovata nel layer {}.\n'.format(layers_dict[key][1])))
                             QCoreApplication.processEvents()
                             msg_art_check += 1
 
                     #check su eventuali particelle che non intersecano nulla ma per cui il clip genera comunque un layer senza features
                     if check_feat == 0:
                         if sel_sezione == 'NULL' or sel_sezione == '' or sel_sezione == '-' or sel_sezione == NULL:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: il terreno identificato dal foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_foglio, sel_particella)))
+                            self.mytopmessage(self.tr('ATTENZIONE: il terreno identificato dal foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_foglio, sel_particella)))
                             QCoreApplication.processEvents()
                         else:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: il terreno identificato dalla sezione {}, foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_sezione, sel_foglio, sel_particella)))
+                            self.mytopmessage(self.tr('ATTENZIONE: il terreno identificato dalla sezione {}, foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_sezione, sel_foglio, sel_particella)))
                             QCoreApplication.processEvents()
                             
                     #check su eventuali particelle con setesso valore per sezione, foglio e mappale
                     if check_double == 0:
                         if sel_sezione == 'NULL' or sel_sezione == '' or sel_sezione == '-' or sel_sezione == NULL:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: è stata trovata un\'altra particella con foglio {} e mappale {}. Non verrà stampata nel CDU. Verificare il layer terreni_catastali.\n'.format(sel_foglio, sel_particella)))
+                            self.mytopmessage(self.tr('ATTENZIONE: è stata trovata un\'altra particella con foglio {} e mappale {}. Non verrà stampata nel CDU. Verificare il layer terreni_catastali.\n'.format(sel_foglio, sel_particella)))
                             QCoreApplication.processEvents()
                         else:
-                            self.dlg.textLog.append(self.tr('ATTENZIONE: è stata trovata un\'altra particella con sezione {}, foglio {} e mappale {}. Non verrà stampata nel CDU. Verificare il layer terreni_catastali.\n'.format(sel_sezione, sel_foglio, sel_particella)))
+                            self.mytopmessage(self.tr('ATTENZIONE: è stata trovata un\'altra particella con sezione {}, foglio {} e mappale {}. Non verrà stampata nel CDU. Verificare il layer terreni_catastali.\n'.format(sel_sezione, sel_foglio, sel_particella)))
                             QCoreApplication.processEvents()
 
                     for key_td, value_td in temp_dict.items():
@@ -1217,10 +1248,10 @@ class CduCreator:
                         
                 else:
                     if sel_sezione == 'NULL' or sel_sezione == '' or sel_sezione == '-' or sel_sezione == NULL:
-                        self.dlg.textLog.append(self.tr('ATTENZIONE: il terreno identificato dal foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_foglio, sel_particella)))
+                        self.mytopmessage(self.tr('ATTENZIONE: il terreno identificato dal foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_foglio, sel_particella)))
                         QCoreApplication.processEvents()
                     else:
-                        self.dlg.textLog.append(self.tr('ATTENZIONE: il terreno identificato dalla sezione {}, foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_sezione, sel_foglio, sel_particella)))
+                        self.mytopmessage(self.tr('ATTENZIONE: il terreno identificato dalla sezione {}, foglio {} e mappale {} non interseca alcun layer.\n'.format(sel_sezione, sel_foglio, sel_particella)))
                         QCoreApplication.processEvents()
             
             self.lyr.removeSelection()
@@ -1250,7 +1281,7 @@ class CduCreator:
                     fw = 60 * w/h
                     stringa += '<p style="text-align:center; vertical-align: middle;"><img height="60" width="' + str(round(fw)) + '" src="' + self.input_logo_path + '"></p>'
                 else:
-                    self.dlg.textLog.append(self.tr('ATTENZIONE: il file {} non è stato trovato, il Logo non verrà stampato.\n'.format(self.input_logo_path)))
+                    self.mytopmessage(self.tr('ATTENZIONE: il file {} non è stato trovato, il Logo non verrà stampato.\n'.format(self.input_logo_path)))
                     QCoreApplication.processEvents()
             stringa += '<h2 style="text-align:center">' + self.CduTitle + ' - Comune di ' + self.CduComune + '</h2>'
             stringa += '<hr><br>'
@@ -1283,7 +1314,7 @@ class CduCreator:
                         stringa += '<div style="font-size: 13px;">' + line + '</div>'
                     txt_file.close()
                 else:
-                    self.dlg.textLog.append(self.tr('ATTENZIONE: il file TXT {} non è stato trovato, il Testo non verrà stampato.\n'.format(self.input_txt_path)))
+                    self.mytopmessage(self.tr('ATTENZIONE: il file TXT {} non è stato trovato, il Testo non verrà stampato.\n'.format(self.input_txt_path)))
                     QCoreApplication.processEvents()
             stringa += '<h3 style="text-align:center">Attesta e Certifica che</h3>'
             
@@ -1323,13 +1354,24 @@ class CduCreator:
                 img.save(img_path_file)
                 
                 stringa += '<p style="text-align:center"><img src="' + img_path_file + '"></p>'
+            if self.input_piede_txt_path != '':
+                if os.path.isfile(self.input_piede_txt_path):
+                    txt_piede_file = open(self.input_piede_txt_path, "r")
+                    #print(file.read())
+                    for line in txt_piede_file:
+                        stringa += '<div style="font-size: 13px;">' + line + '</div>'
+                    txt_piede_file.close()
+                else:
+                    self.mytopmessage(self.tr('ATTENZIONE: il file TXT {} non è stato trovato, il Testo non verrà stampato.\n'.format(self.input_piede_txt_path)))
+                    QCoreApplication.processEvents()
+
             stringa += '<p style="text-align:center"> Il presente CDU è stato creato automaticamente in data {} alle ore {} utilizzando il plugin CDU Creator di QGIS.</p><br>'.format(datetime.now().strftime("%d-%m-%Y"), datetime.now().strftime("%H:%M:%S"))
             stringa += '<p>Si rilascia la presente per gli usi consentiti dalla legge.</p><br><p style="text-align:right"> Il Responsabile del Servizio</p>'
             stringa += '</body></html>'
             doc = QTextDocument()
             doc.setHtml(stringa)
             doc.print(printer)
-            self.dlg.textLog.append(self.tr('Il file PDF {} è stato salvato nella cartella {}.\n'.format(cdu_pdf_name, self.cdu_path_folder)))
+            self.mytopmessage(self.tr('Il file PDF {} è stato salvato nella cartella {}.\n'.format(cdu_pdf_name, self.cdu_path_folder)))
             QCoreApplication.processEvents()
             if self.checkOdtBox == True:
                 if self.cdu_file_name == '':
@@ -1343,10 +1385,10 @@ class CduCreator:
                 writer.setFormat(QByteArray(b'ODF'))
                 writer.setFileName(cdu_odt_path)
                 writer.write(doc)
-                self.dlg.textLog.append(self.tr('Il file ODT {} è stato salvato nella cartella {}.\n'.format(cdu_odt_name, self.cdu_path_folder)))
+                self.mytopmessage(self.tr('Il file ODT {} è stato salvato nella cartella {}.\n'.format(cdu_odt_name, self.cdu_path_folder)))
                 QCoreApplication.processEvents()
                     
-            self.dlg.textLog.append(self.tr('ATTENDERE...il processo terminerà a breve.\n'))
+            self.mytopmessage(self.tr('ATTENDERE...il processo terminerà a breve.\n'))
             QCoreApplication.processEvents()
             for k, sfm in enumerate(sez_sel_list):
                 if self.sezioneIndex != 0:
@@ -1370,5 +1412,5 @@ class CduCreator:
                 self.root.removeChildNode(rm_group)
             map.refresh()
 
-            self.dlg.textLog.append(self.tr('PROCESSO TERMINATO...\n'))
+            self.mytopmessage(self.tr('PROCESSO TERMINATO...\n'))
             QCoreApplication.processEvents()
